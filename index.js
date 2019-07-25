@@ -6,6 +6,7 @@ const server = express();
 
 server.use(express.json());
 
+// get users
 server.get("/api/users", (req, res) => {
   db.find()
     .then(users => {
@@ -14,7 +15,7 @@ server.get("/api/users", (req, res) => {
       } else {
         res.status(500).json({
           success: false,
-          message: "I cannot find the hub you are looking for"
+          error: "The users information could not be retrieved."
         });
       }
     })
@@ -26,19 +27,21 @@ server.get("/api/users", (req, res) => {
     });
 });
 
+// get specific user
 server.get("/api/users/:id", (req, res) => {
   const { id } = req.params;
-  const userInfo = req.body;
 
   db.findById(id)
     .then(user => {
-      res.status(200).json(user);
+      if (user) {
+        res.status(200).json(user);
+      }
     })
     .catch(err => {
       res.status(500).json({
         success: false,
         err,
-        error: "The users information could not be retrieved."
+        message: "The user with the specified ID does not exist."
       });
     });
 });
@@ -46,7 +49,7 @@ server.get("/api/users/:id", (req, res) => {
 server.post("/api/users", (req, res) => {
   const userInfo = req.body;
 
-  db.add(userInfo)
+  db.insert(userInfo)
     .then(user => {
       res.status(201).json({ success: true, user });
     })
