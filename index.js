@@ -28,6 +28,22 @@ server.post("/api/users", (req, res) => {
     });
 });
 
+server.delete("/api/users/:id", (req, res) => {
+  const { id } = request.params;
+
+  db.remove(id)
+    .then(deleted => {
+      if (deleted) {
+        res.status(204).end();
+      } else {
+        res.status(404).json({ success: false, message: "Not deleted" });
+      }
+    })
+    .catch(err => {
+      res.status(500).json({ success: false, err });
+    });
+});
+
 server.listen(4000, () => {
   console.log("server listening on port 4000");
 });
