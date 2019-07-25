@@ -6,10 +6,22 @@ const server = express();
 
 server.use(express.json());
 
-server.get("/db", (req, res) => {
+server.get("/api/users", (req, res) => {
   db.find()
-    .then(db => {
-      res.status(200).json(db);
+    .then(user => {
+      res.status(200).json(user);
+    })
+    .catch(err => {
+      res.status(500).json({ success: false, err });
+    });
+});
+
+server.post("/api/users", (req, res) => {
+  const userInfo = req.body;
+
+  db.add(userInfo)
+    .then(user => {
+      res.status(201).json({ success: true, user });
     })
     .catch(err => {
       res.status(500).json({ success: false, err });
