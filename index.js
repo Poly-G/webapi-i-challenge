@@ -57,7 +57,7 @@ server.post("/api/users", (req, res) => {
       .json({ errorMessage: "Please provide name and bio for the user." });
     return;
   }
-
+  // add the new name and bio
   db.insert({ name, bio })
     .then(() => {
       res.status(201).json({ name, bio });
@@ -70,6 +70,7 @@ server.post("/api/users", (req, res) => {
     });
 });
 
+// Delete user
 server.delete("/api/users/:id", (req, res) => {
   const { id } = req.params;
 
@@ -86,16 +87,27 @@ server.delete("/api/users/:id", (req, res) => {
     });
 });
 
+// Update user
 server.put("/api/users/:id", (req, res) => {
   const { id } = req.params;
   const userInfo = req.body;
+
+  if (!name || !bio) {
+    res
+      .status(400)
+      .json({ errorMessage: "Must provide name and bio for the user" });
+    return;
+  }
 
   db.update(id, userInfo)
     .then(updated => {
       if (updated) {
         res.status(200).json({ success: true, updated });
       } else {
-        res.status(404).json({ success: true, updated });
+        res.status(404).json({
+          success: false,
+          message: "The user with the specified ID does not exist."
+        });
       }
     })
     .catch(err => {
