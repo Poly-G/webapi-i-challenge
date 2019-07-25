@@ -8,11 +8,38 @@ server.use(express.json());
 
 server.get("/api/users", (req, res) => {
   db.find()
+    .then(users => {
+      if (users) {
+        res.status(200).json(users);
+      } else {
+        res.status(500).json({
+          success: false,
+          message: "I cannot find the hub you are looking for"
+        });
+      }
+    })
+    .catch(err => {
+      res.status(500).json({
+        success: false,
+        err
+      });
+    });
+});
+
+server.get("/api/users/:id", (req, res) => {
+  const { id } = req.params;
+  const userInfo = req.body;
+
+  db.findById(id)
     .then(user => {
       res.status(200).json(user);
     })
     .catch(err => {
-      res.status(500).json({ success: false, err });
+      res.status(500).json({
+        success: false,
+        err,
+        error: "The users information could not be retrieved."
+      });
     });
 });
 
