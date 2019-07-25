@@ -46,15 +46,28 @@ server.get("/api/users/:id", (req, res) => {
     });
 });
 
+// add user
 server.post("/api/users", (req, res) => {
-  const userInfo = req.body;
+  const { name, bio } = req.body;
 
-  db.insert(userInfo)
-    .then(user => {
-      res.status(201).json({ success: true, user });
+  if (!name || !bio) {
+    res
+      .status(400)
+      .json({ errorMessage: "Please provide name and bio for the user." });
+    return;
+  }
+
+  db.insert({ name, bio })
+    .then(() => {
+      res.status(201).json({ name, bio });
     })
-    .catch(err => {
-      res.status(500).json({ success: false, err });
+    .catch(() => {
+      res
+        .status(500)
+        .json({
+          error: "There was an error while saving the user to the database"
+        });
+      return;
     });
 });
 
